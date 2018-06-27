@@ -1,0 +1,23 @@
+{
+  "name": "jsbot",
+  "version": "1.0.0",
+  "description": "Simple Dialogflow Bot Fulfillment Engine",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrussek/jsbot.git"
+  },
+  "keywords": [
+    "dialogflow",
+    "chatbot"
+  ],
+  "author": "Max Russek",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/mrussek/jsbot/issues"
+  },
+  "homepage": "https://github.com/mrussek/jsbot#readme"
+}
