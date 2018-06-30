@@ -6,7 +6,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Welcome to Github Bot!</title>
 
+  <!-- update the version number as needed -->
+  <!-- <script src="/__/firebase/5.2.0/firebase-app.js"></script>
+  <!-- include only the Firebase features as you need -->
+  <!-- <script src="/__/firebase/5.2.0/firebase-auth.js"></script> -->
+  <!-- <script src="/__/firebase/5.2.0/firebase-database.js"></script> -->
+  <!-- <script src="/__/firebase/5.2.0/firebase-messaging.js"></script> -->
+  <!-- <script src="/__/firebase/5.2.0/firebase-storage.js"></script> -->
+  <!-- initialize the SDK after all desired features are loaded -->
   <script src="https://www.gstatic.com/firebasejs/5.2.0/firebase.js"></script>
+  <script src="/__/firebase/init.js"></script>
   <script>
     // Initialize Firebase
     var config = {
@@ -19,26 +28,24 @@
     };
     firebase.initializeApp(config);
   </script>
-
-  <!-- update the version number as needed -->
-  <script defer src="/__/firebase/5.2.0/firebase-app.js"></script>
-  <!-- include only the Firebase features as you need -->
-  <script defer src="/__/firebase/5.2.0/firebase-auth.js"></script>
-  <script defer src="/__/firebase/5.2.0/firebase-database.js"></script>
-  <script defer src="/__/firebase/5.2.0/firebase-messaging.js"></script>
-  <script defer src="/__/firebase/5.2.0/firebase-storage.js"></script>
-  <!-- initialize the SDK after all desired features are loaded -->
-  <script defer src="/__/firebase/init.js"></script>
   <script src="https://cdn.firebase.com/libs/firebaseui/3.1.1/firebaseui.js"></script>
   <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.1.1/firebaseui.css" />
   <script type="text/javascript">
     // FirebaseUI config.
     var uiConfig = {
-      signInSuccessUrl: '<url-to-redirect-to-on-success>',
-      signInOptions: [
+      signInSuccessUrl: '',
+      signInOptions: [{
         // Leave the lines as is for the providers you want to offer your users.
-        firebase.auth.GithubAuthProvider.PROVIDER_ID,
-      ],
+        provider: firebase.auth.GithubAuthProvider.PROVIDER_ID,
+        scopes: [
+          "notifications",
+          "read:discussion",
+          "read:org",
+          "repo:status",
+          "public_repo",
+          "user"
+        ]
+      }],
       // Terms of service url.
       tosUrl: '<your-tos-url>'
     };
@@ -127,9 +134,8 @@
     <h2>Welcome</h2>
     <h1>Get Started With Github Bot!</h1>
     <p>Control your Github account with your voice!</p>
-    <a href="https://github.com/login/oauth/authorize">Get Started Now!</a>
+    <div id="firebaseui-auth-container" href="https://github.com/login/oauth/authorize"></div>
   </div>
-  <div id="firebaseui-auth-container"></div>
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
