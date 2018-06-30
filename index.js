@@ -41,8 +41,6 @@ const getNotifications = (req, res) => {
         agent.add(`I'm sorry, can you try again?`)
     }
 
-    // uncomment `intentMap.set('your intent name here', yourFunctionHandler);`
-    // below to get this function to be run when a Dialogflow intent is matched
     function getNots(agent) {
         agent.add(`Sorry! I can't handle that yet`)
 
@@ -119,10 +117,11 @@ const getNotifications = (req, res) => {
         const payload = event.payload
         const branch = payload.ref
         const numberOfCommits = payload.size
+        let pusher;
         if (payload.pusher) {
-            const pusher = payload.pusher.name
+            pusher = payload.pusher.name
         } else {
-            const pusher = "Someone"
+            pusher = "Someone"
         }
 
         return `${pusher} pushed ${numberOfCommits} to ${branch}`
@@ -191,6 +190,35 @@ const getNotifications = (req, res) => {
         })
     }
 
+    function getRepoIssues(agent) {
+        const numberRegex = /\{.*\}/
+
+        return resolveRepo(agent.parameters['repository'])
+            .then(repo => {
+                const allIssues = repo.issues_url.replace(numberRegex, "")
+                return get(allIssues)
+            }).then(issues => {
+                const issueDescriptions = issues.map(issue => `Issue number ${issue.number}, ${issue.title}, opened by ${issue.user.login}`)
+
+                agent.add(issueDescriptions.join(", "))
+            })
+    }
+
+    function getPullRequests(agent) {
+        const numberRegex = /\{.*\}/
+
+        return resolveRepo(agent.parameters['repository']).then(repo => {
+            const allPulls = repo.pulls_url.replace(numberRegex, "")
+            return get(allPulls)
+        }).then(pulls => {
+            const pullDescriptions = pulls
+                .filter(pull => pull.state == "open")
+                .map(pull => `Pull request number ${pull.number}, ${pull.title}, opened by ${pull.user.login}`)
+
+            agent.add(pullDescriptions.join(", "))
+        })
+    }
+
     const intentMap = new Map();
     intentMap.set('Default Welcome Intent', welcome)
     intentMap.set('Default Fallback Intent', fallback)
@@ -198,6 +226,8 @@ const getNotifications = (req, res) => {
     intentMap.set('get-user-repos', getUserRepos)
     intentMap.set('get-repo-description', getRepoDescription)
     intentMap.set('get-repo-events', getRepoEvents)
+    intentMap.set('get-repo-issues', getRepoIssues)
+    intentMap.set('get-repo-pulls', getPullRequests)
 
     agent.handleRequest(intentMap);
 }
