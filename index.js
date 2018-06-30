@@ -17,6 +17,18 @@ const getNotifications = (req, res) => {
         })
     }
 
+    function resolveUser(name) {
+        return get('https://api.github.com/search/users', {
+            q: name
+        }).then(users => users.items[0])
+    }
+
+    function resolveRepo(repo) {
+        return get('https://api.github.com/search/repositories', {
+            q: repo
+        }).then(repos => repos.items[0])
+    }
+
     const agent = new WebhookClient({ request: req, response: res });
     console.log('Dialogflow Request headers: ' + JSON.stringify(req.headers));
     console.log('Dialogflow Request body: ' + JSON.stringify(req.body));
@@ -43,11 +55,9 @@ const getNotifications = (req, res) => {
 
         console.log(`Looking up user: ${userName}`)
 
-        return get("https://api.github.com/search/users", {
-            q: userName
-        }).then(users => {
-            console.log(JSON.stringify(users))
-            return get(users.items[0].repos_url)
+        return resolveUser(userName).then(user => {
+            console.log(JSON.stringify(user))
+            return get(user.repos_url)
         }).then(repos => {
             const repoNames = repos.map(repo => repo.name)
 
@@ -57,11 +67,22 @@ const getNotifications = (req, res) => {
         })
     }
 
+    function getRepoDescription(agent) {
+        const repoName = agent.parameters['repository']
+        return resolveRepo(repoName).then(repo => agent.add(`${repoName} is a ${repo.description}`))
+    }
+
+    function getRepoEvents(agent) {
+        
+    }
+
     let intentMap = new Map();
     intentMap.set('Default Welcome Intent', welcome)
     intentMap.set('Default Fallback Intent', fallback)
     intentMap.set('get-notifications', getNots)
     intentMap.set('get-user-repos', getUserRepos)
+    intentMap.set('get-repo-description', getRepoDescription)
+    intentMap.set('get-repo-events', getRepoEvents)
 
     agent.handleRequest(intentMap);
 }
