@@ -108,6 +108,8 @@ const getNotifications = (req, res) => {
                 console.log(`Top events: ${JSON.stringify(topEvents)}`)
 
                 const responses = topEvents.map(event => {
+                    console.log(`Event type: ${event.type}`)
+
                     switch (event.type) {
                         case "PullRequestEvent": return handlePullRequestEvent(event);
                         case "PullRequestReviewEvent": break;
@@ -121,6 +123,8 @@ const getNotifications = (req, res) => {
 
                     return null
                 }).filter(event => event != null)
+
+                console.log(`Responses: ${responses}`)
 
                 agent.add(responses)
             })
