@@ -238,8 +238,8 @@ const getNotifications = (req, res) => {
                     console.log(`Got master commit: ${JSON.stringify(commit)}`)
                     console.log(`Commit author: ${JSON.stringify(commit.author)}`)
 
-                    const author = commit.author.name
-                    const message = commit.message
+                    const author = commit.commit.author.name
+                    const message = commit.commit.message
         
                     agent.add(`The last commit to ${repo.name} was made by ${author}, saying "${message}"`)
                 })
