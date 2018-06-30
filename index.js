@@ -185,7 +185,7 @@ const getNotifications = (req, res) => {
 
                 console.log(`Responses: ${responses}`)
 
-                agent.add(responses.join(", "))
+                agent.add(responses.join("\n"))
             })
         })
     }
@@ -199,8 +199,9 @@ const getNotifications = (req, res) => {
                 return get(allIssues)
             }).then(issues => {
                 const issueDescriptions = issues.map(issue => `Issue number ${issue.number}, ${issue.title}, opened by ${issue.user.login}`)
+                    .slice(0, 5)
 
-                agent.add(issueDescriptions.join(", "))
+                agent.add(issueDescriptions.join("\n"))
             })
     }
 
@@ -215,7 +216,7 @@ const getNotifications = (req, res) => {
                 .filter(pull => pull.state == "open")
                 .map(pull => `Pull request number ${pull.number}, ${pull.title}, opened by ${pull.user.login}`)
 
-            agent.add(pullDescriptions.join(", "))
+            agent.add(pullDescriptions.join("\n"))
         })
     }
 
