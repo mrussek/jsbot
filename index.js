@@ -49,6 +49,7 @@ const getNotifications = (req, res) => {
     }
 
     function getUserRepos(agent) {
+        console.log("Processing get-user-repos")
         const userName = `${agent.parameters["given-name"]} ${agent.parameters["last-name"]}`
 
         console.log(`Looking up user: ${userName}`)
@@ -66,6 +67,7 @@ const getNotifications = (req, res) => {
     }
 
     function getRepoDescription(agent) {
+        console.log("Processing get-repo-description")
         const repoName = agent.parameters['repository']
         return resolveRepo(repoName).then(repo => agent.add(`${repoName} is a ${repo.description}`))
     }
@@ -148,6 +150,7 @@ const getNotifications = (req, res) => {
     }
 
     function getRepoEvents(agent) {
+        console.log("Processing get-repo-events")
         const repoName = agent.parameters['repository']
         console.log(`Repo name: ${repoName}`)
         const interestingEvents = [
@@ -195,6 +198,7 @@ const getNotifications = (req, res) => {
     }
 
     function getRepoIssues(agent) {
+        console.log("Processing get-repo-issues")
         const numberRegex = /\{.*\}/
 
         return resolveRepo(agent.parameters['repository'])
@@ -210,6 +214,7 @@ const getNotifications = (req, res) => {
     }
 
     function getPullRequests(agent) {
+        console.log("Processing get-pull-requests")
         const numberRegex = /\{.*\}/
 
         return resolveRepo(agent.parameters['repository']).then(repo => {
@@ -226,6 +231,7 @@ const getNotifications = (req, res) => {
     }
 
     function getLastCommit(agent) {
+        console.log("Processing get-last-commit")
         const repo = agent.parameters['repository']
         const numberRegex = /\{.*\}/
 
