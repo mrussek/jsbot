@@ -265,7 +265,7 @@ const getNotifications = (req, res) => {
 
         return resolveRepo(repo).then(repo => {
             console.log(`Repo: ${JSON.stringify(repo)}`)
-            const pullUrl = repo.pulls_url.replace(numberRegex, number)
+            const pullUrl = repo.pulls_url.replace(numberRegex, `/${number}`)
             console.log(`Pull url: ${pullUrl}`)
 
             return get(pullUrl).then(pull => {
