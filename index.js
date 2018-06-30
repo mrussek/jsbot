@@ -86,7 +86,7 @@ const getNotifications = (req, res) => {
 
     function getRepoEvents(agent) {
         const repoName = agent.parameters['repository']
-        console.log(repoName)
+        console.log(`Repo name: ${repoName}`)
         const interestingEvents = [
             "PullRequestEvent", 
             "PullRequestReviewEvent", 
@@ -100,7 +100,7 @@ const getNotifications = (req, res) => {
         return resolveRepo(repoName).then(repo => {
             console.log(`Repo: ${JSON.stringify(repo)}`)
 
-            get(repo.events_url).then(events => {
+            return get(repo.events_url).then(events => {
 
                 const filteredEvents = events.filter(event => interestingEvents.includes(event.type))
                 const topEvents = filteredEvents.slice(0, 5)
