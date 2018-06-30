@@ -225,11 +225,17 @@ const getNotifications = (req, res) => {
         const numberRegex = /\{.*\}/
 
         return resolveRepo(repo).then(repo => {
+            console.log(`Got repo: ${JSON.stringify(repo)}`)
+
             const master = repo.git_refs_url.replace(numberRegex, "/master")
+            console.log(`Got master url: ${master}`)
+
             return get(master).then(reference => { 
                 const masterCommit = repo.commits_url.replace(numberRegex, reference.object.sha)
+                console.log(`Got master commit url: ${masterCommit}`)
 
                 return get(masterCommit).then(commit => {
+                    console.log(`Got master commit: ${JSON.stringify(commit)}`)
                     const author = commit.author.name
                     const message = commit.message
         
