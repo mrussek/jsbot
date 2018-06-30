@@ -58,7 +58,7 @@ const getNotifications = (req, res) => {
         }).then(repos => {
             const repoNames = repos.map(repo => repo.name)
 
-            agent.add(`I found repos by ${userName}: ${repoNames.join(", ")}`)
+            agent.add(`I found repos by ${userName}: ${repoNames.join(".\n")}`)
 
             console.log("Fulfillment \"get-user-repos\" completed")
         })
@@ -185,7 +185,7 @@ const getNotifications = (req, res) => {
 
                 console.log(`Responses: ${responses}`)
 
-                agent.add(responses.join("\n"))
+                agent.add(responses.join(".\n"))
             })
         })
     }
@@ -201,7 +201,7 @@ const getNotifications = (req, res) => {
                 const issueDescriptions = issues.map(issue => `Issue number ${issue.number}, ${issue.title}, opened by ${issue.user.login}`)
                     .slice(0, 5)
 
-                agent.add(issueDescriptions.join("\n"))
+                agent.add(issueDescriptions.join(".\n"))
             })
     }
 
@@ -216,7 +216,7 @@ const getNotifications = (req, res) => {
                 .filter(pull => pull.state == "open")
                 .map(pull => `Pull request number ${pull.number}, ${pull.title}, opened by ${pull.user.login}`)
 
-            agent.add(pullDescriptions.join("\n"))
+            agent.add(pullDescriptions.join(".\n"))
         })
     }
 
