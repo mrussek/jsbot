@@ -119,7 +119,11 @@ const getNotifications = (req, res) => {
         const payload = event.payload
         const branch = payload.ref
         const numberOfCommits = payload.size
-        const pusher = payload.pusher.name
+        if (payload.pusher) {
+            const pusher = payload.pusher.name
+        } else {
+            const pusher = "Someone"
+        }
 
         return `${pusher} pushed ${numberOfCommits} to ${branch}`
     }
