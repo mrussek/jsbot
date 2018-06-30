@@ -231,7 +231,7 @@ const getNotifications = (req, res) => {
             console.log(`Got master url: ${master}`)
 
             return get(master).then(reference => { 
-                const masterCommit = repo.commits_url.replace(numberRegex, reference.object.sha)
+                const masterCommit = repo.commits_url.replace(numberRegex, `/${reference.object.sha}`)
                 console.log(`Got master commit url: ${masterCommit}`)
 
                 return get(masterCommit).then(commit => {
