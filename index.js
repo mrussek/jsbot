@@ -227,7 +227,7 @@ const getNotifications = (req, res) => {
         return resolveRepo(repo).then(repo => {
             console.log(`Got repo: ${JSON.stringify(repo)}`)
 
-            const master = repo.git_refs_url.replace(numberRegex, "/master")
+            const master = repo.git_refs_url.replace(numberRegex, "/heads/master")
             console.log(`Got master url: ${master}`)
 
             return get(master).then(reference => { 
