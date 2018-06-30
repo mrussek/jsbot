@@ -72,6 +72,7 @@ const getNotifications = (req, res) => {
     }
 
     function handlePullRequestEvent(event) {
+        console.log(`Pull Request Event: ${JSON.stringify(event)}`)
         const number = event.payload.number
         const action = event.payload.action
         const title = event.payload.pull_request.title
@@ -79,6 +80,7 @@ const getNotifications = (req, res) => {
     }
 
     function handleForkEvent(event) {
+        console.log(`Fork Event: ${JSON.stringify(event.payload)}`)
         const forker = event.payload.forkee.owner
         const forked = event.payload.name
         return `${forked} was forked by ${forker}`
