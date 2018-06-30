@@ -220,6 +220,7 @@ const getNotifications = (req, res) => {
                 .filter(pull => pull.state == "open")
                 .map(pull => `Pull request number ${pull.number}, ${pull.title}, opened by ${pull.user.login}`)
 
+            console.log(`Found pulls: ${pullDescriptions.join(".\n")}`)
             agent.add(pullDescriptions.join(".\n"))
         })
     }
