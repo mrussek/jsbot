@@ -236,6 +236,8 @@ const getNotifications = (req, res) => {
 
                 return get(masterCommit).then(commit => {
                     console.log(`Got master commit: ${JSON.stringify(commit)}`)
+                    console.log(`Commit author: ${JSON.stringify(commit.author)}`)
+
                     const author = commit.author.name
                     const message = commit.message
         
