@@ -239,7 +239,7 @@ const getNotifications = (req, res) => {
                     const author = commit.author.name
                     const message = commit.message
         
-                    return `The last commit to ${repo.name} was made by ${author}, saying "${message}"`
+                    agent.add(`The last commit to ${repo.name} was made by ${author}, saying "${message}"`)
                 })
              })
         })
