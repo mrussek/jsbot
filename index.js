@@ -71,17 +71,17 @@ const getNotifications = (req, res) => {
         return resolveRepo(repoName).then(repo => agent.add(`${repoName} is a ${repo.description}`))
     }
 
-    function handlePullRequestEvent(agent, event) {
+    function handlePullRequestEvent(event) {
         const number = event.payload.number
         const action = event.payload.action
         const title = event.payload.pull_request.title
-        agent.add(`Number ${number}, ${title}, was ${action}`)
+        return `Number ${number}, ${title}, was ${action}`
     }
 
-    function handleForkEvent(agent, event) {
+    function handleForkEvent(event) {
         const forker = event.payload.forkee.owner
         const forked = event.payload.name
-        agent.add(`${forked} was forked by ${forker}`)
+        return `${forked} was forked by ${forker}`
     }
 
     function getRepoEvents(agent) {
@@ -107,18 +107,22 @@ const getNotifications = (req, res) => {
 
                 console.log(`Top events: ${JSON.stringify(topEvents)}`)
 
-                topEvents.forEach(event => {
+                const responses = topEvents.map(event => {
                     switch (event.type) {
-                        case "PullRequestEvent": handlePullRequestEvent(agent, event); break;
+                        case "PullRequestEvent": return handlePullRequestEvent(event);
                         case "PullRequestReviewEvent": break;
                         case "PullRequesetReviewCommentEvent": break;
                         case "RepositoryEvent": break;
                         case "PushEvent": break;
                         case "ReleaseEvent": break;
-                        case "ForkEvent": handleForkEvent(agent, event); break;
+                        case "ForkEvent": return handleForkEvent(event);
                         default: break;
                     }
-                })
+
+                    return null
+                }).filter(event => event != null)
+
+                agent.add(responses)
             })
         })
     }
