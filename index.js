@@ -1,6 +1,7 @@
 const rp = require('request-promise')
 
 const { WebhookClient } = require('dialogflow-fulfillment');
+const { Card } = require('dialogflow-fulfillment')
 
 const getNotifications = (req, res) => {
     const get = (uri, qs) => {
@@ -115,7 +116,7 @@ const getNotifications = (req, res) => {
     function handlePushEvent(event) {
         console.log(`Push Event: ${JSON.stringify(event.payload)}`)
         const payload = event.payload
-        const branch = payload.ref
+        const ref = payload.ref
         const numberOfCommits = payload.size
         let pusher;
         if (payload.pusher) {
@@ -124,7 +125,10 @@ const getNotifications = (req, res) => {
             pusher = "Someone"
         }
 
-        return `${pusher} pushed ${numberOfCommits} to ${branch}`
+        const branchRegex = /\/.*\//
+        const branch = ref.replace(branchRegex, "")
+
+        return `${pusher} pushed ${numberOfCommits} commits to ${branch}`
     }
 
     function handleReleaseEvent(event) {
@@ -230,7 +234,7 @@ const getNotifications = (req, res) => {
             const master = repo.git_refs_url.replace(numberRegex, "/heads/master")
             console.log(`Got master url: ${master}`)
 
-            return get(master).then(reference => { 
+            return get(master).then(reference => {
                 const masterCommit = repo.commits_url.replace(numberRegex, `/${reference.object.sha}`)
                 console.log(`Got master commit url: ${masterCommit}`)
 
@@ -247,6 +251,28 @@ const getNotifications = (req, res) => {
         })
     }
 
+    function getPullRequest(agent) {
+        const numberRegex = /\{.*\}/
+        const repo = agent.parameters['repository']
+        const number = agent.parameters['number']
+
+        return resolveRepo(repo).then(repo => {
+            console.log(`Repo: ${JSON.stringify(repo)}`)
+            const pullUrl = repo.pulls_url.replace(numberRegex, number)
+            console.log(`Pull url: ${pullUrl}`)
+
+            return get(pullUrl).then(pull => {
+                console.log(`Pull: ${JSON.stringify(pull)}`)
+
+                agent.add(new Card({
+                    title: pull.title,
+                    text: pull.body,
+                    imageUrl: pull.user.avatar_url                    
+                }))
+            })
+        })
+    }
+
     const intentMap = new Map();
     intentMap.set('Default Welcome Intent', welcome)
     intentMap.set('Default Fallback Intent', fallback)
@@ -257,6 +283,7 @@ const getNotifications = (req, res) => {
     intentMap.set('get-repo-issues', getRepoIssues)
     intentMap.set('get-repo-pulls', getPullRequests)
     intentMap.set('get-last-commit', getLastCommit)
+    intentMap.set('get-pull-request', getPullRequest)
 
     agent.handleRequest(intentMap);
 }
