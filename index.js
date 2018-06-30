@@ -126,7 +126,7 @@ const getNotifications = (req, res) => {
 
                 console.log(`Responses: ${responses}`)
 
-                agent.add(responses)
+                agent.add(responses.join(", "))
             })
         })
     }
