@@ -72,11 +72,65 @@ const getNotifications = (req, res) => {
     }
 
     function handlePullRequestEvent(event) {
-        console.log(`Pull Request Event: ${JSON.stringify(event)}`)
+        console.log(`Pull Request Event: ${JSON.stringify(event.payload)}`)
         const number = event.payload.number
         const action = event.payload.action
         const title = event.payload.pull_request.title
-        return `Number ${number}, ${title}, was ${action}`
+        return `Pull request ${number}, ${title}, was ${action}`
+    }
+
+    function handlePullRequestReviewEvent(event) {
+        console.log(`Pull Request Review Event: ${JSON.stringify(event.payload)}`)
+        const reviewer = event.payload.review.user.login
+        const action = event.payload.review.state
+        const body = event.payload.review.body
+        const number = event.pull_request.number
+        const title = event.payload.pull_request.title
+        return `${reviewer} ${action} on Pull Request ${number}, ${title}, saying "${body}"`
+    }
+
+    function handlePullRequestReviewCommentEvent(event) {
+        console.log(`Pull Request Review Comment Event: ${JSON.stringify(event.payload)}`)
+        const payload = event.payload;
+        const commenter = payload.comment.user.login
+        const comment = payload.comment.body
+        const number = payload.pull_request.number
+        const title = payload.pull_request.title
+
+        if (event.payload.action == "created") {
+            return `${commenter} commented "${comment}" on Pull Request Number ${number}, ${title}`
+        } else {
+            return null;
+        }
+    }
+
+    function handleRepositoryEvent(event) {
+        console.log(`Repository Event: ${JSON.stringify(event.payload)}`)
+        const payload = event.payload
+        const repository = payload.repository.name
+        const action = payload.action
+        const actor = payload.sender.login
+
+        return `${repository} was ${action} by ${actor}`
+    }
+
+    function handlePushEvent(event) {
+        console.log(`Push Event: ${JSON.stringify(event.payload)}`)
+        const payload = event.payload
+        const branch = payload.ref
+        const numberOfCommits = payload.size
+        const pusher = payload.pusher.name
+
+        return `${pusher} pushed ${numberOfCommits} to ${branch}`
+    }
+
+    function handleReleaseEvent(event) {
+        console.log(`Release Event: ${JSON.stringify(event.payload)}`)
+        const payload = event.payload
+        const author = payload.release.author.login
+        const releaseName = payload.release.tagname
+
+        return `${author} published version ${releaseName}`
     }
 
     function handleForkEvent(event) {
@@ -90,12 +144,12 @@ const getNotifications = (req, res) => {
         const repoName = agent.parameters['repository']
         console.log(`Repo name: ${repoName}`)
         const interestingEvents = [
-            "PullRequestEvent", 
-            "PullRequestReviewEvent", 
-            "PullRequestReviewCommentEvent", 
-            "RepositoryEvent", 
-            "PushEvent", 
-            "ReleaseEvent", 
+            "PullRequestEvent",
+            "PullRequestReviewEvent",
+            "PullRequestReviewCommentEvent",
+            "RepositoryEvent",
+            "PushEvent",
+            "ReleaseEvent",
             "ForkEvent"
         ]
 
@@ -114,11 +168,11 @@ const getNotifications = (req, res) => {
 
                     switch (event.type) {
                         case "PullRequestEvent": return handlePullRequestEvent(event);
-                        case "PullRequestReviewEvent": break;
-                        case "PullRequesetReviewCommentEvent": break;
-                        case "RepositoryEvent": break;
-                        case "PushEvent": break;
-                        case "ReleaseEvent": break;
+                        case "PullRequestReviewEvent": return handlePullRequestReviewEvent(event);
+                        case "PullRequesetReviewCommentEvent": return handlePullRequestReviewCommentEvent(event);
+                        case "RepositoryEvent": return handleRepositoryEvent(event);
+                        case "PushEvent": return handlePushEvent(event);
+                        case "ReleaseEvent": return handleReleaseEvent(event);
                         case "ForkEvent": return handleForkEvent(event);
                         default: break;
                     }
@@ -133,7 +187,7 @@ const getNotifications = (req, res) => {
         })
     }
 
-    let intentMap = new Map();
+    const intentMap = new Map();
     intentMap.set('Default Welcome Intent', welcome)
     intentMap.set('Default Fallback Intent', fallback)
     intentMap.set('get-notifications', getNots)
