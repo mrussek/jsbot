@@ -81,8 +81,8 @@ const getNotifications = (req, res) => {
 
     function handleForkEvent(event) {
         console.log(`Fork Event: ${JSON.stringify(event.payload)}`)
-        const forker = event.payload.forkee.owner
-        const forked = event.payload.name
+        const forker = event.payload.forkee.owner.login
+        const forked = event.payload.forkee.name
         return `${forked} was forked by ${forker}`
     }
 
