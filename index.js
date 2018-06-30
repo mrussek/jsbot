@@ -45,9 +45,9 @@ const getNotifications = (req, res) => {
     // uncomment `intentMap.set('your intent name here', yourFunctionHandler);`
     // below to get this function to be run when a Dialogflow intent is matched
     function getNots(agent) {
-      agent.add(`Sorry! I can't handle that yet`)
+        agent.add(`Sorry! I can't handle that yet`)
 
-      console.log("Fulfillment \"get-notifications\" completed")
+        console.log("Fulfillment \"get-notifications\" completed")
     }
 
     function getUserRepos(agent) {
@@ -72,8 +72,50 @@ const getNotifications = (req, res) => {
         return resolveRepo(repoName).then(repo => agent.add(`${repoName} is a ${repo.description}`))
     }
 
+    function handlePullRequestEvent(agent, event) {
+        const number = event.payload.number
+        const action = event.payload.action
+        const title = event.payload.pull_request.title
+        agent.add(`Number ${number}, ${title}, was ${action}`)
+    }
+
+    function handleForkEvent(agent, event) {
+        const forker = event.payload.forkee.owner
+        const forked = event.payload.name
+        agent.add(`${forked} was forked by ${forker}`)
+    }
+
     function getRepoEvents(agent) {
-        
+        const repoName = agent.parameters['repository']
+        const interestingEvents = [
+            "PullRequestEvent", 
+            "PullRequestReviewEvent", 
+            "PullRequestReviewCommentEvent", 
+            "RepositoryEvent", 
+            "PushEvent", 
+            "ReleaseEvent", 
+            "ForkEvent"
+        ]
+
+        return resolveRepo(repoName).then(repo => {
+            get(repo.events_url).then(events => {
+                const filteredEvents = events.filter(event => interestingEvents.includes(event.type))
+                const topEvents = filteredEvents.slice(0, 5)
+
+                topEvents.forEach(event => {
+                    switch (event.type) {
+                        case "PullRequestEvent": handlePullRequestEvent(agent, event); break;
+                        case "PullRequestReviewEvent": break;
+                        case "PullRequesetReviewCommentEvent": break;
+                        case "RepositoryEvent": break;
+                        case "PushEvent": break;
+                        case "ReleaseEvent": break;
+                        case "ForkEvent": handleForkEvent(agent, event); break;
+                        default: break;
+                    }
+                })
+            })
+        })
     }
 
     let intentMap = new Map();
