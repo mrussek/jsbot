@@ -220,6 +220,25 @@ const getNotifications = (req, res) => {
         })
     }
 
+    function getLastCommit(agent) {
+        const repo = agent.parameters['repository']
+        const numberRegex = /\{.*\}/
+
+        return resolveRepo(repo).then(repo => {
+            const master = repo.git_refs_url.replace(numberRegex, "/master")
+            return get(master).then(reference => { 
+                const masterCommit = repo.commits_url.replace(numberRegex, reference.object.sha)
+
+                return get(masterCommit).then(commit => {
+                    const author = commit.author.name
+                    const message = commit.message
+        
+                    return `The last commit to ${repo.name} was made by ${author}, saying "${message}"`
+                })
+             })
+        })
+    }
+
     const intentMap = new Map();
     intentMap.set('Default Welcome Intent', welcome)
     intentMap.set('Default Fallback Intent', fallback)
@@ -229,6 +248,7 @@ const getNotifications = (req, res) => {
     intentMap.set('get-repo-events', getRepoEvents)
     intentMap.set('get-repo-issues', getRepoIssues)
     intentMap.set('get-repo-pulls', getPullRequests)
+    intentMap.set('get-last-commit', getLastCommit)
 
     agent.handleRequest(intentMap);
 }
