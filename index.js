@@ -271,6 +271,7 @@ const getNotifications = (req, res) => {
             return get(pullUrl).then(pull => {
                 console.log(`Pull: ${JSON.stringify(pull)}`)
 
+                agent.add("I found this for you:")
                 agent.add(new Card({
                     title: pull.title,
                     text: pull.body,
