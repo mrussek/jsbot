@@ -169,7 +169,7 @@ const getNotifications = (req, res) => {
             return get(repo.events_url).then(events => {
 
                 const filteredEvents = events.filter(event => interestingEvents.includes(event.type))
-                const topEvents = filteredEvents.slice(0, 5)
+                const topEvents = filteredEvents.slice(0, 3)
 
                 console.log(`Top events: ${JSON.stringify(topEvents)}`)
 
@@ -207,7 +207,7 @@ const getNotifications = (req, res) => {
                 return get(allIssues)
             }).then(issues => {
                 const issueDescriptions = issues.map(issue => `Issue number ${issue.number}, ${issue.title}, opened by ${issue.user.login}`)
-                    .slice(0, 5)
+                    .slice(0, 3)
 
                 agent.add(issueDescriptions.join(".\n"))
             })
